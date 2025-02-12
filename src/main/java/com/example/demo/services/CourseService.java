@@ -4,6 +4,7 @@ import com.example.demo.entities.courses.Course;
 import com.example.demo.entities.student.CourseRegistration;
 import com.example.demo.entities.student.Student;
 import com.example.demo.model.CourseDto;
+import com.example.demo.model.StudentDto;
 import com.example.demo.repositories.CourseRegistrationRepository;
 import com.example.demo.repositories.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,18 +13,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class CourseService {
 
     private final CourseRepository courseRepository;
     private final CourseRegistrationRepository courseRegistrationRepository;
+    private final StudentService studentService;
 
     @Autowired
-    public CourseService(CourseRepository courseRepository, CourseRegistrationRepository courseRegistrationRepository) {
+    public CourseService(CourseRepository courseRepository, CourseRegistrationRepository courseRegistrationRepository, StudentService studentService) {
         this.courseRepository = courseRepository;
         this.courseRegistrationRepository = courseRegistrationRepository;
+        this.studentService = studentService;
     }
 
     private CourseDto mapToCourseDto(Course course) {
@@ -70,4 +72,14 @@ public class CourseService {
     public Page<CourseDto> getAllCourses(Pageable pageable) {
         return courseRepository.findAll(pageable).map(this::mapToCourseDto);
     }
+
+    public Page<StudentDto> findByCourse(Long courseId, Pageable pageable) {
+        Course  course = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("noup"));
+        Page<Student> students=courseRegistrationRepository.findByCourse(course,pageable);
+        return students.map(studentService.mapToStudentDto);
+    }
+
+
+
+
 }

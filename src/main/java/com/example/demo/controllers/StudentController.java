@@ -4,6 +4,7 @@ import com.example.demo.entities.student.CourseRegistration;
 import com.example.demo.model.StudentDto;
 import com.example.demo.repositories.CourseRegistrationRepository;
 import com.example.demo.repositories.StudentRepository;
+import com.example.demo.services.CourseService;
 import com.example.demo.services.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,14 +23,16 @@ public class StudentController {
     private final StudentService studentService;
     private final StudentRepository studentRepository;
     private final CourseRegistrationRepository courseRegistrationRepository;
+    private final CourseService courseService;
 
 
     @Autowired
 
-    public StudentController(StudentService studentService, StudentRepository studentRepository, CourseRegistrationRepository courseRegistrationRepository) {
+    public StudentController(StudentService studentService, StudentRepository studentRepository, CourseRegistrationRepository courseRegistrationRepository, CourseService courseService) {
         this.studentService = studentService;
         this.studentRepository = studentRepository;
         this.courseRegistrationRepository = courseRegistrationRepository;
+        this.courseService = courseService;
     }
 
 
@@ -58,9 +61,16 @@ public class StudentController {
     public void updateStudent(@PathVariable("studentId") Long studentId, @RequestBody StudentDto student) {
         studentService.updateStudent(studentId,student);
     }
+
     @GetMapping(path="{studentId}/registrations")
     public Set<CourseRegistration> getStudentCourseRegistrations(@PathVariable("studentId") Long studentId) {
         return courseRegistrationRepository.findByStudentId(studentId);
     }
 
+    // nadji studente koji imaju kurs
+
+    @GetMapping(path="{courseId}")
+    public Page<StudentDto> getStudentsByCourse(@PathVariable("courseId") Long courseId, Pageable pageable) {
+        return courseService.findByCourse(courseId,pageable);
+    }
 }
