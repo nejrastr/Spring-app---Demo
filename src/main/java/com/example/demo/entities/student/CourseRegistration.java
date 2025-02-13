@@ -18,16 +18,14 @@ public class CourseRegistration {
     Long id;
 
     @ManyToOne
-    @JoinColumn(name="student_id")
+    @JoinColumn(name = "student_id")
     Student student;
 
     @ManyToOne
-    @JoinColumn(name="course_id")
+    @JoinColumn(name = "course_id")
     Course course;
 
     private Integer grade;
-
-
 
 
 }

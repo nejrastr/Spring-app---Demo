@@ -22,7 +22,7 @@ import java.util.List;
 @RestController
 @Getter
 @Setter
-@RequestMapping(path="/api/v1/student/subjects")
+@RequestMapping(path = "/api/v1/student/subjects")
 public class CourseController {
 
     private final CourseService courseService;
@@ -39,10 +39,10 @@ public class CourseController {
     }
 
 
-    @PostMapping(path="/{studentId}/{courseId}")
-    public void assignStudentToCourse(@PathVariable("studentId")Long courseId, @PathVariable("courseId")Long studentId) {
-        Student student=studentService.findById(studentId);
-        Course course=courseService.findById(courseId);
+    @PostMapping(path = "/{studentId}/{courseId}")
+    public void assignStudentToCourse(@PathVariable("studentId") Long courseId, @PathVariable("courseId") Long studentId) {
+        Student student = studentService.findById(studentId);
+        Course course = courseService.findById(courseId);
 
 
         courseService.assignStudentToCourse(student, course);
@@ -50,30 +50,29 @@ public class CourseController {
 
     @GetMapping
     public Page<CourseDto> getAllCourses(Pageable pagable) {
-     return courseService.getAllCourses(pagable);
+        return courseService.getAllCourses(pagable);
     }
 
 
-
     @PostMapping("/{studentId}/{courseId}/grade")
-    public void addGradeToCourse(@PathVariable("studentId")Long studentId, @PathVariable("courseId")Long courseId,@RequestBody int grade) {
-        Student student=studentService.findById(studentId);
-        Course course=courseService.findById(courseId);
+    public void addGradeToCourse(@PathVariable("studentId") Long studentId, @PathVariable("courseId") Long courseId, @RequestBody int grade) {
+        Student student = studentService.findById(studentId);
+        Course course = courseService.findById(courseId);
 
-        CourseRegistration courseRegistration=courseRegistrationRepository.findByStudentAndCourse(student, course);
+        CourseRegistration courseRegistration = courseRegistrationRepository.findByStudentAndCourse(student, course);
         courseRegistration.setGrade(grade);
 
         courseRegistrationRepository.save(courseRegistration);
 
     }
+
     @PutMapping(path = "courseId")
-    public void updateCourse(@PathVariable ("courseId") Long courseId,@RequestBody CourseDto courseDto) {
-        courseService.updateCourse(courseId,courseDto);
+    public void updateCourse(@PathVariable("courseId") Long courseId, @RequestBody CourseDto courseDto) {
+        courseService.updateCourse(courseId, courseDto);
     }
 
-    @PostMapping
-    public void addSubject(CourseDto courseDto) {
-
+    @PostMapping("/new")
+    public void addSubject(@RequestBody CourseDto courseDto) {
         courseService.addNewSubject(courseDto);
     }
 
@@ -82,19 +81,19 @@ public class CourseController {
     }
 
     @GetMapping("/all")
-     public List<CourseRegistrationDto>getAllSubjects() {
-         List<CourseRegistration> allSubjects = courseService.getAllSubjects();
-         var list = new ArrayList<CourseRegistrationDto>();
-         for (CourseRegistration courseRegistration : allSubjects) {
-             list.add(mapToDTO(courseRegistration));
-         }
-         return list;
+    public List<CourseRegistrationDto> getAllSubjects() {
+        List<CourseRegistration> allSubjects = courseService.getAllSubjects();
+        var list = new ArrayList<CourseRegistrationDto>();
+        for (CourseRegistration courseRegistration : allSubjects) {
+            list.add(mapToDTO(courseRegistration));
+        }
+        return list;
 
-     }
+    }
 
-     CourseRegistrationDto mapToDTO(CourseRegistration courseRegistration) {
+    CourseRegistrationDto mapToDTO(CourseRegistration courseRegistration) {
         return new CourseRegistrationDto(courseRegistration.getStudent().getName(), courseRegistration.getCourse().getName());
-     }
+    }
 
 
 }

@@ -7,11 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CourseDto {
-
+public class GradeDto {
     private Long id;
-
-    private String name;
+    private double grade;
 
 
 }

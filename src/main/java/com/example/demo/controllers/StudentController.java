@@ -1,6 +1,7 @@
 package com.example.demo.controllers;
 
 import com.example.demo.entities.student.CourseRegistration;
+import com.example.demo.model.GradeDto;
 import com.example.demo.model.StudentDto;
 import com.example.demo.repositories.CourseRegistrationRepository;
 import com.example.demo.repositories.StudentRepository;
@@ -75,8 +76,12 @@ public class StudentController {
     }
 
     @GetMapping(path = "{courseId}/grade")
-    public Set<StudentDto> getAllStudentsInCourseByGrade(@PathVariable Long courseId, @RequestBody int grade) {
-        return courseService.getAllStudentFromCourseWithGrade(courseId, grade);
+    public Set<StudentDto> getAllStudentsInCourseByGrade(@PathVariable Long courseId, @RequestBody GradeDto gradeDto) {
+        return courseService.getAllStudentFromCourseWithGrade(courseId, gradeDto.getGrade());
     }
 
+    @GetMapping(path = "{studentId}/averageGrade")
+    public GradeDto getAverageGrade(@PathVariable Long studentId) {
+        return courseService.calculateAverageStudenGrade(studentId);
+    }
 }

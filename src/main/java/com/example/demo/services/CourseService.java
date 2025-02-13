@@ -4,6 +4,7 @@ import com.example.demo.entities.courses.Course;
 import com.example.demo.entities.student.CourseRegistration;
 import com.example.demo.entities.student.Student;
 import com.example.demo.model.CourseDto;
+import com.example.demo.model.GradeDto;
 import com.example.demo.model.StudentDto;
 import com.example.demo.repositories.CourseRegistrationRepository;
 import com.example.demo.repositories.CourseRepository;
@@ -47,12 +48,15 @@ public class CourseService {
 
 
     private Course mapToCourseEntity(CourseDto courseDto) {
-        return updateCourseEntity(new Course(), courseDto);
+        return new Course(courseDto.getId(), courseDto.getName());
     }
 
-    public void addNewSubject(CourseDto courseDto) {
+    public CourseDto addNewSubject(CourseDto courseDto) {
+        System.out.println(courseDto.getName());
         Course course = mapToCourseEntity(courseDto);
         courseRepository.save(course);
+        return mapToCourseDto(course);
+
 
     }
 
@@ -85,8 +89,23 @@ public class CourseService {
 
     }
 
+    public GradeDto calculateAverageStudenGrade(Long studentId) {
+        Student student = studentService.findById(studentId);
+        List<Integer> grades = courseRegistrationRepository.getGradesByStudentId(student.getId());
+        System.out.println(grades);
+        int sum = 0;
+        //System.out.println(sum);
+        for (Integer grade : grades) {
+            sum += grade;
+        }
+        System.out.println(sum);
+        double average = (double) sum / grades.size();
+        System.out.println(average);
+        return new GradeDto(studentId, average);
 
-    public Set<StudentDto> getAllStudentFromCourseWithGrade(Long courseId, int grade) {
+    }
+
+    public Set<StudentDto> getAllStudentFromCourseWithGrade(Long courseId, double grade) {
         Course course = courseRepository.findById(courseId).orElseThrow();
         Set<Student> students = courseRegistrationRepository.findStudentsByGradeAndCourse(course, grade);
         return students.stream().map(studentService::mapToStudentDto).collect(Collectors.toSet());

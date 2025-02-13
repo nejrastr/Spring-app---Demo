@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Set;
 
 public interface CourseRegistrationRepository extends JpaRepository<CourseRegistration, Long> {
@@ -23,7 +24,13 @@ public interface CourseRegistrationRepository extends JpaRepository<CourseRegist
             SELECT cr.student FROM CourseRegistration cr WHERE cr.course = :course AND cr.grade=:grade
             
             """)
-    Set<Student> findStudentsByGradeAndCourse(@Param("course") Course course, @Param("grade") int grade);
+    Set<Student> findStudentsByGradeAndCourse(@Param("course") Course course, @Param("grade") double grade);
+
+    @Query
+            ("""
+                    SELECT cr.grade FROM CourseRegistration cr WHERE cr.student.id=:studentId
+                    """)
+    List<Integer> getGradesByStudentId(@Param("studentId") Long studentId);
 
 
 }
