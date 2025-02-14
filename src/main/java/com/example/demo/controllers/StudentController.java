@@ -7,6 +7,7 @@ import com.example.demo.repositories.CourseRegistrationRepository;
 import com.example.demo.repositories.StudentRepository;
 import com.example.demo.services.CourseService;
 import com.example.demo.services.StudentService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -48,7 +50,7 @@ public class StudentController {
     }
 
     @PostMapping
-    public ResponseEntity<StudentDto> addStudent(@RequestBody StudentDto student) {
+    public ResponseEntity<StudentDto> addStudent(@Valid @RequestBody StudentDto student) {
         StudentDto newStudent = studentService.addNewStudent(student);
         return new ResponseEntity<>(newStudent, HttpStatus.CREATED);
 
@@ -84,4 +86,19 @@ public class StudentController {
     public GradeDto getAverageGrade(@PathVariable Long studentId) {
         return courseService.calculateAverageStudenGrade(studentId);
     }
+
+    @GetMapping(path = "all/averageGrades")
+    public List<GradeDto> getAllStudentsAverageGrades() {
+        return courseService.findAllStudentsAverages();
+
+    }
+
+    @GetMapping("/students")
+    public List<String> getStudentsNames(@RequestParam(required = false) Long courseId,
+                                         @RequestParam(required = false) Integer grade) {
+        return studentService.getsStudentNames(courseId, grade);
+
+
+    }
+
 }

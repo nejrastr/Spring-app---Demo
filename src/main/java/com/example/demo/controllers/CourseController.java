@@ -4,6 +4,8 @@ import com.example.demo.entities.courses.Course;
 import com.example.demo.entities.student.CourseRegistration;
 import com.example.demo.entities.student.Student;
 import com.example.demo.model.CourseDto;
+import com.example.demo.model.GradeDto;
+import com.example.demo.model.StudentGradesDto;
 import com.example.demo.repositories.CourseRegistrationRepository;
 import com.example.demo.repositories.CourseRepository;
 import com.example.demo.repositories.StudentRepository;
@@ -38,7 +40,7 @@ public class CourseController {
         this.courseRepository = courseRepository;
     }
 
-
+    //registrate student to a course
     @PostMapping(path = "/{studentId}/{courseId}")
     public void assignStudentToCourse(@PathVariable("studentId") Long courseId, @PathVariable("courseId") Long studentId) {
         Student student = studentService.findById(studentId);
@@ -53,24 +55,21 @@ public class CourseController {
         return courseService.getAllCourses(pagable);
     }
 
-
+    //ADD GRADE TO THE COURSE
     @PostMapping("/{studentId}/{courseId}/grade")
-    public void addGradeToCourse(@PathVariable("studentId") Long studentId, @PathVariable("courseId") Long courseId, @RequestBody int grade) {
-        Student student = studentService.findById(studentId);
-        Course course = courseService.findById(courseId);
+    public void addGradeToCourse(@PathVariable("studentId") Long studentId, @PathVariable("courseId") Long courseId, @RequestBody GradeDto grade) {
 
-        CourseRegistration courseRegistration = courseRegistrationRepository.findByStudentAndCourse(student, course);
-        courseRegistration.setGrade(grade);
-
-        courseRegistrationRepository.save(courseRegistration);
+        courseService.setStudentGrade(studentId, courseId, grade.getGrade());
 
     }
 
+    //UPDATE COURSE
     @PutMapping(path = "courseId")
     public void updateCourse(@PathVariable("courseId") Long courseId, @RequestBody CourseDto courseDto) {
         courseService.updateCourse(courseId, courseDto);
     }
 
+    //create subject
     @PostMapping("/new")
     public void addSubject(@RequestBody CourseDto courseDto) {
         courseService.addNewSubject(courseDto);
@@ -80,6 +79,7 @@ public class CourseController {
 
     }
 
+    //list of course registations
     @GetMapping("/all")
     public List<CourseRegistrationDto> getAllSubjects() {
         List<CourseRegistration> allSubjects = courseService.getAllSubjects();
@@ -90,6 +90,13 @@ public class CourseController {
         return list;
 
     }
+
+    @GetMapping(path = "{studentId}/grades")
+    public List<StudentGradesDto> getAllStudentGrades(@PathVariable Long studentId) {
+        return studentService.getAllStudentGrades(studentId);
+
+    }
+
 
     CourseRegistrationDto mapToDTO(CourseRegistration courseRegistration) {
         return new CourseRegistrationDto(courseRegistration.getStudent().getName(), courseRegistration.getCourse().getName());

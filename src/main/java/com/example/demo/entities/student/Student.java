@@ -2,7 +2,11 @@ package com.example.demo.entities.student;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.*;
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -24,13 +28,20 @@ public class Student {
     Set<CourseRegistration> registrations;
 
 
+    @NotBlank(message = "Name can not be empty")
     private String name;
+
+
     private int yearOfStudy;
 
-    private int age;
-    private String email;
-    private LocalDate dateOfBirth;
 
+    private int age;
+
+
+    private String email;
+   
+
+    private LocalDate dateOfBirth;
 
 
 }

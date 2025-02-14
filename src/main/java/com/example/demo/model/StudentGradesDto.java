@@ -6,12 +6,9 @@ import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+
 @NoArgsConstructor
-public class GradeDto {
-
-    private Long id;
+public class StudentGradesDto {
     private String name;
-    private double grade;
-
-
+    private Integer grade;
 }
