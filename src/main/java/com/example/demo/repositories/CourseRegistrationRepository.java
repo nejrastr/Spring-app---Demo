@@ -40,8 +40,9 @@ public interface CourseRegistrationRepository extends JpaRepository<CourseRegist
     @Query("SELECT new com.example.demo.model.GradeDto (c.student.id, c.student.name, AVG(coalesce( c.grade, 0))) FROM CourseRegistration c GROUP BY c.student.id,c.student.name")
     List<GradeDto> getAverageGradesWithNull();
 
-    @Query("SELECT new com.example.demo.model.StudentGradesDto(c.name, cr.grade) FROM CourseRegistration cr JOIN cr.course c WHERE cr.student.id = :studentId")
+    @Query("SELECT c FROM CourseRegistration cr JOIN cr.course c WHERE cr.student.id = :studentId")
     List<StudentGradesDto> findStudentGradesForCourses(@Param("studentId") Long studentId);
 
-
+    @Query("SELECT cr FROM CourseRegistration cr WHERE cr.course.id = :courseId")
+    List<CourseRegistration> findByCourseId(@Param("courseId") Long courseId);
 }

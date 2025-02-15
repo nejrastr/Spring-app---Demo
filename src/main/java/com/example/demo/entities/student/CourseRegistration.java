@@ -1,5 +1,6 @@
 package com.example.demo.entities.student;
 
+import com.example.demo.entities.Profesor;
 import com.example.demo.entities.courses.Course;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,10 @@ public class CourseRegistration {
     @ManyToOne
     @JoinColumn(name = "course_id")
     Course course;
+
+    @ManyToOne
+    @JoinColumn(name = "profesor_id")
+    Profesor profesor;
 
     private Integer grade;
 
