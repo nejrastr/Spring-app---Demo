@@ -5,6 +5,7 @@ import com.example.demo.entities.student.CourseRegistration;
 import com.example.demo.entities.student.Student;
 import com.example.demo.model.CourseDto;
 import com.example.demo.model.GradeDto;
+import com.example.demo.model.NumberOfCourseRegistrationsDto;
 import com.example.demo.model.StudentGradesDto;
 import com.example.demo.repositories.CourseRegistrationRepository;
 import com.example.demo.repositories.CourseRepository;
@@ -112,5 +113,11 @@ public class CourseController {
     public List<CourseDto> getAllSubjectsByStudentOrProfessor(@RequestParam(required = false) Long studentId,
                                                               @RequestParam(required = false) Long professorId) {
         return courseService.getAllSubjectsByStudentOrProfessor(studentId, professorId);
+    }
+
+    @GetMapping("/registations")
+    public List<NumberOfCourseRegistrationsDto> getAllCourseRegistrations() {
+        return courseService.getNumbersOfAllCourseRegistartions();
+
     }
 }

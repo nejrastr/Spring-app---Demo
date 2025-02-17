@@ -4,6 +4,7 @@ import com.example.demo.entities.courses.Course;
 import com.example.demo.entities.student.CourseRegistration;
 import com.example.demo.entities.student.Student;
 import com.example.demo.model.GradeDto;
+import com.example.demo.model.NumberOfCourseRegistrationsDto;
 import com.example.demo.model.StudentGradesDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -45,4 +46,10 @@ public interface CourseRegistrationRepository extends JpaRepository<CourseRegist
 
     @Query("SELECT cr FROM CourseRegistration cr WHERE cr.course.id = :courseId")
     List<CourseRegistration> findByCourseId(@Param("courseId") Long courseId);
+
+
+    @Query("SELECT new com.example.demo.model.NumberOfCourseRegistrationsDto(COUNT(cr),cr.course.name) " +
+            "FROM CourseRegistration cr " +
+            "GROUP BY cr.course.id,cr.course.name")
+    List<NumberOfCourseRegistrationsDto> getNumberOfRegistrationsForEachCourse();
 }

@@ -7,6 +7,7 @@ import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFound;
 import com.example.demo.model.CourseDto;
 import com.example.demo.model.GradeDto;
+import com.example.demo.model.NumberOfCourseRegistrationsDto;
 import com.example.demo.model.StudentDto;
 import com.example.demo.repositories.CourseRegistrationRepository;
 import com.example.demo.repositories.CourseRepository;
@@ -165,5 +166,10 @@ public class CourseService {
         CourseRegistration cr = courseRegistrationRepository.findByStudentAndCourse(studentService.findById(studentId), findById(courseId));
         cr.setGrade(Double.valueOf(grade).intValue());
         courseRegistrationRepository.save(cr);
+    }
+
+    public List<NumberOfCourseRegistrationsDto> getNumbersOfAllCourseRegistartions() {
+         
+        return courseRegistrationRepository.getNumberOfRegistrationsForEachCourse();
     }
 }
