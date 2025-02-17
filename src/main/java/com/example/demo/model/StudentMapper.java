@@ -20,4 +20,8 @@ public class StudentMapper {
         return studentEntity;
 
     }
+
+    public StudentDto mapToStudentDto(Student student) {
+        return new StudentDto(student.getId(), student.getName(), student.getYearOfStudy(), student.getAge(), student.getEmail(), student.getDateOfBirth());
+    }
 }

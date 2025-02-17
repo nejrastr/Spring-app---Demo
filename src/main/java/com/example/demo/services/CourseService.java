@@ -154,4 +154,16 @@ public class CourseService {
 
         courseRegistrationRepository.save(courseRegistration);
     }
+
+    public List<CourseDto> getAllSubjectsByStudentOrProfessor(Long studentId, Long professorId) {
+        List<Course> courses = courseRepository.findCourseByStudentIdAndProfessorId(studentId, professorId);
+
+        return courses.stream().map(this::mapToCourseDto).toList();
+    }
+
+    public void updateStudentGrade(Long studentId, Long courseId, double grade) {
+        CourseRegistration cr = courseRegistrationRepository.findByStudentAndCourse(studentService.findById(studentId), findById(courseId));
+        cr.setGrade(Double.valueOf(grade).intValue());
+        courseRegistrationRepository.save(cr);
+    }
 }

@@ -63,6 +63,12 @@ public class CourseController {
 
     }
 
+    @PatchMapping("/{studentId}/{courseId}/grade")
+    public void updateGradeOnCourse(@PathVariable("studentId") Long studentId, @PathVariable("courseId") Long courseId, @RequestBody GradeDto grade) {
+        courseService.updateStudentGrade(studentId, courseId, grade.getGrade());
+    }
+
+
     //UPDATE COURSE
     @PutMapping(path = "courseId")
     public void updateCourse(@PathVariable("courseId") Long courseId, @RequestBody CourseDto courseDto) {
@@ -102,5 +108,9 @@ public class CourseController {
         return new CourseRegistrationDto(courseRegistration.getStudent().getName(), courseRegistration.getCourse().getName());
     }
 
-
+    @GetMapping("/subject")
+    public List<CourseDto> getAllSubjectsByStudentOrProfessor(@RequestParam(required = false) Long studentId,
+                                                              @RequestParam(required = false) Long professorId) {
+        return courseService.getAllSubjectsByStudentOrProfessor(studentId, professorId);
+    }
 }

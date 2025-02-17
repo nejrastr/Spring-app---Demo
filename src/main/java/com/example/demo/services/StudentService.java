@@ -3,6 +3,7 @@ package com.example.demo.services;
 import com.example.demo.entities.student.Student;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFound;
+import com.example.demo.model.GradeDto;
 import com.example.demo.model.StudentDto;
 import com.example.demo.model.StudentGradesDto;
 import com.example.demo.model.StudentMapper;
@@ -114,5 +115,19 @@ public class StudentService {
 
         return studentRepository.findByCourseIdAndGrade(courseId, grade);
 
+    }
+
+    public StudentDto getBestStudentByAverageScore() {
+        List<GradeDto> averageGrades = courseRegistrationRepository.getAverageGradesWithNull();
+        var bestGrade = averageGrades.getFirst();
+        for (GradeDto gradeDto : averageGrades) {
+            if (gradeDto.getGrade() > bestGrade.getGrade()) {
+                bestGrade = gradeDto;
+            }
+        }
+        System.out.println(bestGrade);
+        Student student = studentRepository.findById(bestGrade.getId()).orElseThrow(() -> new ResourceNotFound("Student not found"));
+        System.out.println(student);
+        return studentMapper.mapToStudentDto(student);
     }
 }

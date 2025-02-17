@@ -1,8 +1,11 @@
 package com.example.demo.services;
 
 import com.example.demo.entities.Profesor;
+import com.example.demo.entities.courses.Course;
 import com.example.demo.entities.student.CourseRegistration;
 import com.example.demo.exception.BadRequestException;
+import com.example.demo.model.CourseDto;
+import com.example.demo.model.CourseMapper;
 import com.example.demo.model.ProfesorDto;
 import com.example.demo.model.ProfessorMapper;
 import com.example.demo.repositories.CourseRegistrationRepository;
@@ -18,11 +21,15 @@ public class ProfesorService {
     private final ProfesorRepository profesorRepository;
     private final ProfessorMapper professorMapper;
     private final CourseRegistrationRepository courseRegistrationRepository;
+    private final CourseService courseService;
+    private final CourseMapper courseMapper;
 
-    public ProfesorService(ProfesorRepository profesorRepository, ProfessorMapper professorMapper, CourseRegistrationRepository courseRegistrationRepository) {
+    public ProfesorService(ProfesorRepository profesorRepository, ProfessorMapper professorMapper, CourseRegistrationRepository courseRegistrationRepository, CourseService courseService, CourseMapper courseMapper) {
         this.profesorRepository = profesorRepository;
         this.professorMapper = professorMapper;
         this.courseRegistrationRepository = courseRegistrationRepository;
+        this.courseService = courseService;
+        this.courseMapper = courseMapper;
     }
 
     public ProfesorDto addNewProfessor(ProfesorDto profesorDto) {
@@ -93,5 +100,10 @@ public class ProfesorService {
             courseRegistration.setProfesor(profesor);
         }
         courseRegistrationRepository.saveAll(profesorCourse);
+    }
+
+    public List<CourseDto> getAllProfesorCourses(Integer profesorId) {
+        List<Course> profesorCourses = profesorRepository.getAllProfesorCoursesById(profesorId);
+        return profesorCourses.stream().map(courseMapper::mapToCourseDto).toList();
     }
 }

@@ -101,4 +101,10 @@ public class StudentController {
 
     }
 
+    @GetMapping("/best-students")
+    public StudentDto getBestStudentsByAverageScore() {
+        return studentService.getBestStudentByAverageScore();
+    }
+
+
 }
