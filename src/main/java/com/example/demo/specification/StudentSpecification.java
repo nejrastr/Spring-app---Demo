@@ -1,6 +1,7 @@
 package com.example.demo.specification;
 
 import com.example.demo.entities.student.Student;
+import com.example.demo.model.DepartmentEnum;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
@@ -28,4 +29,7 @@ public class StudentSpecification {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("yearOfStudy"), yearOfStudy);
     }
 
+    public static Specification<Student> hasDepartment(DepartmentEnum department) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("department"), department);
+    }
 }

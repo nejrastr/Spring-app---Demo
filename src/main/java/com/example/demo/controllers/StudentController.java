@@ -1,6 +1,7 @@
 package com.example.demo.controllers;
 
 import com.example.demo.entities.student.CourseRegistration;
+import com.example.demo.model.DepartmentEnum;
 import com.example.demo.model.GradeDto;
 import com.example.demo.model.StudentDto;
 import com.example.demo.repositories.CourseRegistrationRepository;
@@ -108,10 +109,11 @@ public class StudentController {
     @GetMapping("/search")
     public Page<StudentDto> searchStudents(@RequestParam(required = false) String name,
                                            @RequestParam(required = false) Integer yearOfStudy,
+                                           @RequestParam(required = false) DepartmentEnum departmentEnum,
                                            @RequestParam(required = false) Integer age,
                                            @RequestParam(required = false) String email,
                                            @RequestParam(required = false) LocalDate dateOfBirth, Pageable pageable) {
-        return studentService.findStudents(name, yearOfStudy, age, email, dateOfBirth, pageable);
+        return studentService.findStudents(name, yearOfStudy, departmentEnum, age, email, dateOfBirth, pageable);
 
     }
 

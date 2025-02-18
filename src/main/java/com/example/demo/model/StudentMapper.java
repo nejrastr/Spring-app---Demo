@@ -14,6 +14,7 @@ public class StudentMapper {
         studentEntity.setId(student.getId());
         studentEntity.setName(student.getName());
         studentEntity.setYearOfStudy(student.getYearOfStudy());
+        studentEntity.setDepartment(student.getDepartment());
         studentEntity.setAge(student.getAge());
         studentEntity.setEmail(student.getEmail());
         studentEntity.setDateOfBirth(student.getDateOfBirth());
@@ -22,6 +23,6 @@ public class StudentMapper {
     }
 
     public StudentDto mapToStudentDto(Student student) {
-        return new StudentDto(student.getId(), student.getName(), student.getYearOfStudy(), student.getAge(), student.getEmail(), student.getDateOfBirth());
+        return new StudentDto(student.getId(), student.getName(), student.getYearOfStudy(), student.getDepartment(), student.getAge(), student.getEmail(), student.getDateOfBirth());
     }
 }
