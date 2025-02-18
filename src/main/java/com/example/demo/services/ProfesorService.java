@@ -34,7 +34,7 @@ public class ProfesorService {
 
     public ProfesorDto addNewProfessor(ProfesorDto profesorDto) {
 
-        Profesor profesor = professorMapper.mapToProfesorEntity(profesorDto);
+        Profesor profesor = professorMapper.mapToProfessorEntity(profesorDto);
         profesorRepository.save(profesor);
         return professorMapper.mapToProfessorDto(profesor);
 
@@ -84,7 +84,7 @@ public class ProfesorService {
             updatedProfessor.setEmail(profesorDto.getEmail());
         }
 
-        profesorRepository.save(professorMapper.mapToProfesorEntity(updatedProfessor));
+        profesorRepository.save(professorMapper.mapToProfessorEntity(updatedProfessor));
         return updatedProfessor;
 
     }

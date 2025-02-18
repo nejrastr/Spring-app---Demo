@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,9 +13,9 @@ public class StudentDto {
 
     private Long id;
     private String name;
-    private int yearOfStudy;
+    private Integer yearOfStudy;
 
-    private int age;
+    private Integer age;
     private String email;
     private LocalDate dateOfBirth;
 }

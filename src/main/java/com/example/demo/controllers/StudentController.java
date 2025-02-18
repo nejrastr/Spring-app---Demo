@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -106,5 +107,14 @@ public class StudentController {
         return studentService.getBestStudentByAverageScore();
     }
 
+    @GetMapping("/search")
+    public Page<StudentDto> searchStudents(@RequestParam(required = false) String name,
+                                           @RequestParam(required = false) Integer yearOfStudy,
+                                           @RequestParam(required = false) Integer age,
+                                           @RequestParam(required = false) String email,
+                                           @RequestParam(required = false) LocalDate dateOfBirth, Pageable pageable) {
+        return studentService.findStudents(name, yearOfStudy, age, email, dateOfBirth, pageable);
+
+    }
 
 }

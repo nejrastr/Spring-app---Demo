@@ -10,9 +10,11 @@ import com.example.demo.model.StudentMapper;
 import com.example.demo.repositories.CourseRegistrationRepository;
 import com.example.demo.repositories.CourseRepository;
 import com.example.demo.repositories.StudentRepository;
+import com.example.demo.specification.StudentSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -129,5 +131,17 @@ public class StudentService {
         Student student = studentRepository.findById(bestGrade.getId()).orElseThrow(() -> new ResourceNotFound("Student not found"));
         System.out.println(student);
         return studentMapper.mapToStudentDto(student);
+    }
+
+    public Page<StudentDto> findStudents(String name, Integer yearOfStudy, Integer age, String email, LocalDate dateOfBirth, Pageable pageable) {
+        Specification<Student> spec = Specification.where(null);
+
+        if (name != null) spec = spec.and(StudentSpecification.hasName(name));
+        if (age != null) spec = spec.and(StudentSpecification.hasAge(age));
+        if (email != null) spec = spec.and(StudentSpecification.hasEmail(email));
+        if (dateOfBirth != null) spec = spec.and(StudentSpecification.hasDOB(dateOfBirth));
+        if (yearOfStudy != null) spec = spec.and(StudentSpecification.hasYOB(yearOfStudy));
+        //List<Student> students = studentRepository.findAll(spec);
+        return studentRepository.findAll(spec, pageable).map(this::mapToStudentDto);
     }
 }

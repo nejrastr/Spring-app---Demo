@@ -11,7 +11,7 @@ public class ProfessorMapper {
 
     }
 
-    public Profesor mapToProfesorEntity(ProfesorDto profesorDto) {
+    public Profesor mapToProfessorEntity(ProfesorDto profesorDto) {
         return new Profesor(profesorDto.getId(), profesorDto.getName(), profesorDto.getEmail());
     }
 }
