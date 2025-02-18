@@ -12,6 +12,9 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
+@Table(name = "Profesor", uniqueConstraints = {
+        @UniqueConstraint(name = "uc_profesor_email", columnNames = {"email"})
+})
 @AllArgsConstructor
 @NoArgsConstructor
 public class Profesor {
@@ -21,6 +24,7 @@ public class Profesor {
 
 
     private String name;
+
     private String email;
     private
 

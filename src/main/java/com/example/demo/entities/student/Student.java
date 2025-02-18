@@ -1,6 +1,7 @@
 package com.example.demo.entities.student;
 
 import com.example.demo.model.DepartmentEnum;
+import com.example.demo.model.GenderEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -38,7 +39,8 @@ public class Student {
     private DepartmentEnum department;
     private int yearOfStudy;
 
-
+    @Enumerated(EnumType.STRING)
+    private GenderEnum gender;
     private int age;
 
 

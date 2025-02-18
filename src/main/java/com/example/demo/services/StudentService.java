@@ -37,7 +37,7 @@ public class StudentService {
     }
 
     StudentDto mapToStudentDto(Student student) {
-        return new StudentDto(student.getId(), student.getName(), student.getYearOfStudy(), student.getDepartment(), student.getAge(), student.getEmail(), student.getDateOfBirth());
+        return new StudentDto(student.getId(), student.getName(), student.getYearOfStudy(), student.getDepartment(), student.getGender(), student.getAge(), student.getEmail(), student.getDateOfBirth());
     }
 
     public Page<StudentDto> getStudents(Pageable pageable) {
@@ -130,11 +130,12 @@ public class StudentService {
         return studentMapper.mapToStudentDto(student);
     }
 
-    public Page<StudentDto> findStudents(String name, Integer yearOfStudy, DepartmentEnum departmentEnum, Integer age, String email, LocalDate dateOfBirth, Pageable pageable) {
+    public Page<StudentDto> findStudents(String name, Integer yearOfStudy, GenderEnum gender, DepartmentEnum departmentEnum, Integer age, String email, LocalDate dateOfBirth, Pageable pageable) {
         Specification<Student> spec = Specification.where(null);
 
         if (name != null) spec = spec.and(StudentSpecification.hasName(name));
         if (age != null) spec = spec.and(StudentSpecification.hasAge(age));
+        if (gender != null) spec = spec.and(StudentSpecification.hasGender(gender));
         if (departmentEnum != null) spec = spec.and(StudentSpecification.hasDepartment(departmentEnum));
         if (email != null) spec = spec.and(StudentSpecification.hasEmail(email));
         if (dateOfBirth != null) spec = spec.and(StudentSpecification.hasDOB(dateOfBirth));

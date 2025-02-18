@@ -17,6 +17,8 @@ public class StudentDto {
     private Integer yearOfStudy;
     @Column(nullable = true)
     private DepartmentEnum department;
+    @Column(nullable = true)
+    private GenderEnum gender;
     private Integer age;
     private String email;
     private LocalDate dateOfBirth;

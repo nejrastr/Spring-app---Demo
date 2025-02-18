@@ -2,6 +2,7 @@ package com.example.demo.specification;
 
 import com.example.demo.entities.student.Student;
 import com.example.demo.model.DepartmentEnum;
+import com.example.demo.model.GenderEnum;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
@@ -31,5 +32,10 @@ public class StudentSpecification {
 
     public static Specification<Student> hasDepartment(DepartmentEnum department) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("department"), department);
+    }
+
+    public static Specification<Student> hasGender(GenderEnum gender) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("gender"), gender);
+        
     }
 }
