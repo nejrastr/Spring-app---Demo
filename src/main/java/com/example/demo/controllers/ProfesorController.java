@@ -4,9 +4,9 @@ import com.example.demo.model.CourseDto;
 import com.example.demo.model.ProfesorDto;
 import com.example.demo.repositories.CourseRegistrationRepository;
 import com.example.demo.services.ProfesorService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("profesors/")
@@ -31,8 +31,8 @@ public class ProfesorController {
 
     //get all professors
     @GetMapping(path = "all")
-    public List<ProfesorDto> getAllProfessor() {
-        return profesorService.getAllProffesors();
+    public Page<ProfesorDto> getAllProfessor(Pageable pageable) {
+        return profesorService.getAllProfessors(pageable);
     }
 
     //professor by id
@@ -61,8 +61,8 @@ public class ProfesorController {
     }
 
     @GetMapping("/{profesorId}/courses")
-    public List<CourseDto> getAllProfesorCourses(@PathVariable Integer profesorId) {
-        return profesorService.getAllProfesorCourses(profesorId);
+    public Page<CourseDto> getAllProfesorCourses(@PathVariable Integer profesorId, Pageable pageable) {
+        return profesorService.getAllProfesorCourses(profesorId, pageable);
 
     }
 

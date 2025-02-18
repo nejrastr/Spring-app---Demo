@@ -16,8 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping(path = "api/v1/student")
@@ -69,18 +67,18 @@ public class StudentController {
 
 
     @GetMapping(path = "{studentId}/registrations")
-    public Set<CourseRegistration> getStudentCourseRegistrations(@PathVariable("studentId") Long studentId) {
-        return courseRegistrationRepository.findByStudentId(studentId);
+    public Page<CourseRegistration> getStudentCourseRegistrations(@PathVariable("studentId") Long studentId, Pageable pageable) {
+        return courseRegistrationRepository.findByStudentId(studentId, pageable);
     }
 
     @GetMapping(path = "{courseId}/students")
-    public Set<StudentDto> getCourseStudents(@PathVariable("courseId") Long courseId) {
-        return courseService.findStudentByCourseId(courseId);
+    public Page<StudentDto> getCourseStudents(@PathVariable("courseId") Long courseId, Pageable pageable) {
+        return courseService.findStudentByCourseId(courseId, pageable);
     }
 
     @GetMapping(path = "{courseId}/grade")
-    public Set<StudentDto> getAllStudentsInCourseByGrade(@PathVariable Long courseId, @RequestBody GradeDto gradeDto) {
-        return courseService.getAllStudentFromCourseWithGrade(courseId, gradeDto.getGrade());
+    public Page<StudentDto> getAllStudentsInCourseByGrade(@PathVariable Long courseId, @RequestBody GradeDto gradeDto, Pageable pageable) {
+        return courseService.getAllStudentFromCourseWithGrade(courseId, gradeDto.getGrade(), pageable);
     }
 
     @GetMapping(path = "{studentId}/averageGrade")
@@ -89,15 +87,15 @@ public class StudentController {
     }
 
     @GetMapping(path = "all/averageGrades")
-    public List<GradeDto> getAllStudentsAverageGrades() {
-        return courseService.findAllStudentsAverages();
+    public GradeDto getAllStudentsAverageGrades() {
+        return (GradeDto) courseService.findAllStudentsAverages();
 
     }
 
     @GetMapping("/students")
-    public List<String> getStudentsNames(@RequestParam(required = false) Long courseId,
-                                         @RequestParam(required = false) Integer grade) {
-        return studentService.getsStudentNames(courseId, grade);
+    public Page<StudentDto> getStudentsNames(@RequestParam(required = false) Long courseId,
+                                             @RequestParam(required = false) Integer grade, Pageable pageable) {
+        return studentService.getsStudentNames(courseId, grade, pageable);
 
 
     }

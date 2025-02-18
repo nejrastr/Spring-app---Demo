@@ -1,14 +1,12 @@
 package com.example.demo.services;
 
+import com.example.demo.controllers.CourseController;
 import com.example.demo.entities.courses.Course;
 import com.example.demo.entities.student.CourseRegistration;
 import com.example.demo.entities.student.Student;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFound;
-import com.example.demo.model.CourseDto;
-import com.example.demo.model.GradeDto;
-import com.example.demo.model.NumberOfCourseRegistrationsDto;
-import com.example.demo.model.StudentDto;
+import com.example.demo.model.*;
 import com.example.demo.repositories.CourseRegistrationRepository;
 import com.example.demo.repositories.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class CourseService {
@@ -26,12 +22,16 @@ public class CourseService {
     private final CourseRepository courseRepository;
     private final CourseRegistrationRepository courseRegistrationRepository;
     private final StudentService studentService;
+    private final CourseMapper courseMapper;
+    private final StudentMapper studentMapper;
 
     @Autowired
-    public CourseService(CourseRepository courseRepository, CourseRegistrationRepository courseRegistrationRepository, StudentService studentService) {
+    public CourseService(CourseRepository courseRepository, CourseRegistrationRepository courseRegistrationRepository, StudentService studentService, CourseMapper courseMapper, StudentMapper studentMapper) {
         this.courseRepository = courseRepository;
         this.courseRegistrationRepository = courseRegistrationRepository;
         this.studentService = studentService;
+        this.courseMapper = courseMapper;
+        this.studentMapper = studentMapper;
     }
 
     private CourseDto mapToCourseDto(Course course) {
@@ -83,12 +83,9 @@ public class CourseService {
         return courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFound("Course not found"));
     }
 
-    public List<CourseRegistration> getAllSubjects() {
-        List<CourseRegistration> courseRegistrations = courseRegistrationRepository.findAll();
-        if (courseRegistrations.isEmpty()) {
-            throw new ResourceNotFound("No courses found");
-        }
-        return courseRegistrationRepository.findAll();
+    public Page<CourseRegistration> getAllCourseRegistrations(Pageable pagable) {
+
+        return courseRegistrationRepository.findAll(pagable);
     }
 
     public Page<CourseDto> getAllCourses(Pageable pageable) {
@@ -96,13 +93,13 @@ public class CourseService {
     }
 
 
-    public Set<StudentDto> findStudentByCourseId(Long courseId) {
+    public Page<StudentDto> findStudentByCourseId(Long courseId, Pageable pagable) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFound("Course not found"));
-        Set<Student> students = courseRegistrationRepository.findStudentByCourse(course);
+        Page<Student> students = courseRegistrationRepository.findStudentByCourse(course, pagable);
         if (students.isEmpty()) {
             throw new ResourceNotFound("No students enrolled to this course");
         }
-        return students.stream().map(studentService::mapToStudentDto).collect(Collectors.toSet());
+        return students.map(studentMapper::mapToStudentDto);
 
 
     }
@@ -127,13 +124,13 @@ public class CourseService {
         return new GradeDto(student.getId(), student.getName(), average);
     }
 
-    public Set<StudentDto> getAllStudentFromCourseWithGrade(Long courseId, double grade) {
+    public Page<StudentDto> getAllStudentFromCourseWithGrade(Long courseId, double grade, Pageable pageable) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFound("Course not found"));
-        Set<Student> students = courseRegistrationRepository.findStudentsByGradeAndCourse(course, grade);
+        Page<Student> students = courseRegistrationRepository.findStudentsByGradeAndCourse(course, grade, pageable);
         if (students.isEmpty()) {
             throw new ResourceNotFound("No students with this grade found");
         }
-        return students.stream().map(studentService::mapToStudentDto).collect(Collectors.toSet());
+        return students.map(studentService::mapToStudentDto);
     }
 
     public List<GradeDto> findAllStudentsAverages() {
@@ -156,10 +153,10 @@ public class CourseService {
         courseRegistrationRepository.save(courseRegistration);
     }
 
-    public List<CourseDto> getAllSubjectsByStudentOrProfessor(Long studentId, Long professorId) {
-        List<Course> courses = courseRepository.findCourseByStudentIdAndProfessorId(studentId, professorId);
+    public Page<CourseDto> getAllSubjectsByStudentOrProfessor(Long studentId, Long professorId, Pageable pageable) {
+        Page<Course> courses = courseRepository.findCourseByStudentIdAndProfessorId(studentId, professorId, pageable);
 
-        return courses.stream().map(this::mapToCourseDto).toList();
+        return courses.map(this::mapToCourseDto);
     }
 
     public void updateStudentGrade(Long studentId, Long courseId, double grade) {
@@ -168,8 +165,19 @@ public class CourseService {
         courseRegistrationRepository.save(cr);
     }
 
-    public List<NumberOfCourseRegistrationsDto> getNumbersOfAllCourseRegistartions() {
-         
-        return courseRegistrationRepository.getNumberOfRegistrationsForEachCourse();
+    public Page<NumberOfCourseRegistrationsDto> getNumbersOfAllCourseRegistartions(Pageable pageable) {
+
+        return courseRegistrationRepository.getNumberOfRegistrationsForEachCourse(pageable);
+    }
+
+    public Page<CourseController.CourseRegistrationDto> findAllCourseRegistrations(Pageable pageable) {
+        Page<CourseRegistration> allSubjects = getAllCourseRegistrations(pageable);
+
+
+        return allSubjects.map(this::mapToDTO);
+    }
+
+    CourseController.CourseRegistrationDto mapToDTO(CourseRegistration courseRegistration) {
+        return new CourseController.CourseRegistrationDto(courseRegistration.getStudent().getName(), courseRegistration.getCourse().getName());
     }
 }

@@ -10,9 +10,10 @@ import com.example.demo.model.ProfesorDto;
 import com.example.demo.model.ProfessorMapper;
 import com.example.demo.repositories.CourseRegistrationRepository;
 import com.example.demo.repositories.ProfesorRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -41,35 +42,28 @@ public class ProfesorService {
 
     }
 
-    public List<ProfesorDto> getAllProffesors() {
-        List<Profesor> profesors = profesorRepository.findAll();
-        if (profesors.isEmpty()) {
-            throw new BadRequestException("No professors");
+    public Page<ProfesorDto> getAllProfessors(Pageable pageable) {
+        Page<Profesor> professors = profesorRepository.findAll(pageable);
 
-        }
-        List<ProfesorDto> profesorDtos = new ArrayList<>();
-        for (Profesor profesor : profesors) {
-            profesorDtos.add(professorMapper.mapToProfessorDto(profesor));
-        }
-        return profesorDtos;
+        return professors.map(professorMapper::mapToProfessorDto);
     }
 
-    public ProfesorDto getProfessorById(Integer profesorId) {
-        ProfesorDto profesor = profesorRepository.getProfesorsById(profesorId);
-        if (profesor == null) {
+    public ProfesorDto getProfessorById(Integer professorId) {
+        ProfesorDto professor = profesorRepository.getProfesorsById(professorId);
+        if (professor == null) {
             throw new BadRequestException("No professor");
         }
 
-        return profesorRepository.getProfesorsById(profesorId);
+        return profesorRepository.getProfesorsById(professorId);
     }
 
-    public void deleteProfessor(Integer profesorId) {
-        ProfesorDto profesor = profesorRepository.getProfesorsById(profesorId);
-        if (profesor == null) {
+    public void deleteProfessor(Integer professorId) {
+        ProfesorDto professor = profesorRepository.getProfesorsById(professorId);
+        if (professor == null) {
             throw new BadRequestException("No professor");
         }
 
-        profesorRepository.deleteById(Long.valueOf(profesorId));
+        profesorRepository.deleteById(Long.valueOf(professorId));
     }
 
     public ProfesorDto updateProfessor(Integer profesorId, ProfesorDto profesorDto) {
@@ -102,8 +96,8 @@ public class ProfesorService {
         courseRegistrationRepository.saveAll(profesorCourse);
     }
 
-    public List<CourseDto> getAllProfesorCourses(Integer profesorId) {
-        List<Course> profesorCourses = profesorRepository.getAllProfesorCoursesById(profesorId);
-        return profesorCourses.stream().map(courseMapper::mapToCourseDto).toList();
+    public Page<CourseDto> getAllProfesorCourses(Integer profesorId, Pageable pageable) {
+        Page<Course> profesorCourses = profesorRepository.getAllProfesorCoursesById(profesorId, pageable);
+        return profesorCourses.map(courseMapper::mapToCourseDto);
     }
 }

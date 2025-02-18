@@ -6,28 +6,29 @@ import com.example.demo.entities.student.Student;
 import com.example.demo.model.GradeDto;
 import com.example.demo.model.NumberOfCourseRegistrationsDto;
 import com.example.demo.model.StudentGradesDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Set;
 
 public interface CourseRegistrationRepository extends JpaRepository<CourseRegistration, Long> {
     CourseRegistration findByStudentAndCourse(Student student, Course course);
 
-    Set<CourseRegistration> findByStudentId(Long studentid);
+    Page<CourseRegistration> findByStudentId(Long studentid, Pageable pageable);
 
     @Query("""
             SELECT cr.student FROM CourseRegistration cr WHERE cr.course = :course
             """)
-    Set<Student> findStudentByCourse(@Param("course") Course course);
+    Page<Student> findStudentByCourse(@Param("course") Course course, Pageable pageable);
 
     @Query("""
             SELECT cr.student FROM CourseRegistration cr WHERE cr.course = :course AND cr.grade=:grade
             
             """)
-    Set<Student> findStudentsByGradeAndCourse(@Param("course") Course course, @Param("grade") double grade);
+    Page<Student> findStudentsByGradeAndCourse(@Param("course") Course course, @Param("grade") double grade, Pageable pageable);
 
     @Query
             ("""
@@ -42,7 +43,7 @@ public interface CourseRegistrationRepository extends JpaRepository<CourseRegist
     List<GradeDto> getAverageGradesWithNull();
 
     @Query("SELECT cr.course FROM CourseRegistration cr  WHERE cr.student.id = :studentId")
-    List<StudentGradesDto> findStudentGradesForCourses(@Param("studentId") Long studentId);
+    Page<StudentGradesDto> findStudentGradesForCourses(@Param("studentId") Long studentId, Pageable pageable);
 
     @Query("SELECT cr FROM CourseRegistration cr WHERE cr.course.id = :courseId")
     List<CourseRegistration> findByCourseId(@Param("courseId") Long courseId);
@@ -51,5 +52,5 @@ public interface CourseRegistrationRepository extends JpaRepository<CourseRegist
     @Query("SELECT new com.example.demo.model.NumberOfCourseRegistrationsDto(COUNT(cr),cr.course.name) " +
             "FROM CourseRegistration cr " +
             "GROUP BY cr.course.id,cr.course.name")
-    List<NumberOfCourseRegistrationsDto> getNumberOfRegistrationsForEachCourse();
+    Page<NumberOfCourseRegistrationsDto> getNumberOfRegistrationsForEachCourse(Pageable pageable);
 }

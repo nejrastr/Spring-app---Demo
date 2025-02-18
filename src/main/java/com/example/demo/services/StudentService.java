@@ -3,10 +3,7 @@ package com.example.demo.services;
 import com.example.demo.entities.student.Student;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFound;
-import com.example.demo.model.GradeDto;
-import com.example.demo.model.StudentDto;
-import com.example.demo.model.StudentGradesDto;
-import com.example.demo.model.StudentMapper;
+import com.example.demo.model.*;
 import com.example.demo.repositories.CourseRegistrationRepository;
 import com.example.demo.repositories.CourseRepository;
 import com.example.demo.repositories.StudentRepository;
@@ -27,13 +24,15 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final CourseRepository courseRepository;
     private final StudentMapper studentMapper;
+    private final GradeMapper gradeMapper;
     private final CourseRegistrationRepository courseRegistrationRepository;
 
     @Autowired
-    public StudentService(StudentRepository studentRepository, CourseRepository courseRepository, StudentMapper studentMapper, CourseRegistrationRepository courseRegistrationRepository) {
+    public StudentService(StudentRepository studentRepository, CourseRepository courseRepository, StudentMapper studentMapper, GradeMapper gradeMapper, CourseRegistrationRepository courseRegistrationRepository) {
         this.studentRepository = studentRepository;
         this.courseRepository = courseRepository;
         this.studentMapper = studentMapper;
+        this.gradeMapper = gradeMapper;
         this.courseRegistrationRepository = courseRegistrationRepository;
     }
 
@@ -107,15 +106,13 @@ public class StudentService {
         return studentRepository.findAll();
     }
 
-    public List<StudentGradesDto> getAllStudentGrades(Long studentId) {
-        List<StudentGradesDto> studentGrades = courseRegistrationRepository.findStudentGradesForCourses(studentId);
-        return studentGrades;
-
+    public Page<StudentGradesDto> getAllStudentGrades(Long studentId, Pageable pageable) {
+        return courseRegistrationRepository.findStudentGradesForCourses(studentId, pageable);
     }
 
-    public List<String> getsStudentNames(Long courseId, Integer grade) {
+    public Page<StudentDto> getsStudentNames(Long courseId, Integer grade, Pageable pageable) {
 
-        return studentRepository.findByCourseIdAndGrade(courseId, grade);
+        return studentRepository.findByCourseIdAndGrade(courseId, grade, pageable);
 
     }
 

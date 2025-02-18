@@ -19,9 +19,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @RestController
 @Getter
 @Setter
@@ -88,19 +85,15 @@ public class CourseController {
 
     //list of course registations
     @GetMapping("/all")
-    public List<CourseRegistrationDto> getAllSubjects() {
-        List<CourseRegistration> allSubjects = courseService.getAllSubjects();
-        var list = new ArrayList<CourseRegistrationDto>();
-        for (CourseRegistration courseRegistration : allSubjects) {
-            list.add(mapToDTO(courseRegistration));
-        }
-        return list;
+    public Page<CourseRegistrationDto> getAllSubjects(Pageable pagable) {
+
+        return courseService.findAllCourseRegistrations(pagable);
 
     }
 
     @GetMapping(path = "{studentId}/grades")
-    public List<StudentGradesDto> getAllStudentGrades(@PathVariable Long studentId) {
-        return studentService.getAllStudentGrades(studentId);
+    public Page<StudentGradesDto> getAllStudentGrades(@PathVariable Long studentId, Pageable pagable) {
+        return studentService.getAllStudentGrades(studentId, pagable);
 
     }
 
@@ -110,14 +103,14 @@ public class CourseController {
     }
 
     @GetMapping("/subject")
-    public List<CourseDto> getAllSubjectsByStudentOrProfessor(@RequestParam(required = false) Long studentId,
-                                                              @RequestParam(required = false) Long professorId) {
-        return courseService.getAllSubjectsByStudentOrProfessor(studentId, professorId);
+    public Page<CourseDto> getAllSubjectsByStudentOrProfessor(@RequestParam(required = false) Long studentId,
+                                                              @RequestParam(required = false) Long professorId, Pageable pageable) {
+        return courseService.getAllSubjectsByStudentOrProfessor(studentId, professorId, pageable);
     }
 
     @GetMapping("/registations")
-    public List<NumberOfCourseRegistrationsDto> getAllCourseRegistrations() {
-        return courseService.getNumbersOfAllCourseRegistartions();
+    public Page<NumberOfCourseRegistrationsDto> getAllCourseRegistrations(Pageable pagable) {
+        return courseService.getNumbersOfAllCourseRegistartions(pagable);
 
     }
 }
