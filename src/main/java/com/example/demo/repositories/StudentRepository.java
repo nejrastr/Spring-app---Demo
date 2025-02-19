@@ -3,6 +3,7 @@ package com.example.demo.repositories;
 import com.example.demo.entities.courses.Course;
 import com.example.demo.entities.student.Student;
 import com.example.demo.model.StudentDto;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,4 +25,5 @@ public interface StudentRepository extends JpaRepository<Student, Long>, JpaSpec
     Page<StudentDto> findByCourseIdAndGrade(@Param("courseId") Long courseId, @Param("grade") Integer grade, Pageable pageable);
 
 
+    Optional<Student> findByName(@NotBlank(message = "Name can not be empty") String name);
 }
