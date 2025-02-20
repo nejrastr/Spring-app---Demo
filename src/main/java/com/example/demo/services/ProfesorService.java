@@ -5,6 +5,7 @@ import com.example.demo.entities.courses.Course;
 import com.example.demo.entities.student.CourseRegistration;
 import com.example.demo.event.ProfessorRegistrationEvent;
 import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.ResourceNotFound;
 import com.example.demo.model.CourseDto;
 import com.example.demo.model.CourseMapper;
 import com.example.demo.model.ProfesorDto;
@@ -13,6 +14,7 @@ import com.example.demo.repositories.CourseRegistrationRepository;
 import com.example.demo.repositories.ProfesorRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -90,20 +92,20 @@ public class ProfesorService {
 
     }
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @EventListener
 
     public void writeProfessorName(ProfessorRegistrationEvent professorRegistrationEvent) {
         System.out.println(professorRegistrationEvent.name());
 
     }
 
-//    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-//
-//    public void writeProfessorNameTwice(ProfessorRegistrationEvent professorRegistrationEvent) {
-//        System.out.println(professorRegistrationEvent.name());
-//        System.out.println(professorRegistrationEvent.name());
-//
-//    }
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+
+    public void writeProfessorNameTwice(ProfessorRegistrationEvent professorRegistrationEvent) {
+        System.out.println(professorRegistrationEvent.name());
+        System.out.println(professorRegistrationEvent.name());
+
+    }
 
     @Transactional
     public void assignProfesorToCourse(Integer courseId, Integer profesorId) {
@@ -112,13 +114,13 @@ public class ProfesorService {
         if (profesorCourse == null) {
             throw new BadRequestException("No registrations for course");
         }
-        Profesor profesor = profesorRepository.findById(Long.valueOf(profesorId)).orElse(null);
+        Profesor profesor = profesorRepository.findById(Long.valueOf(profesorId)).orElseThrow(() -> new ResourceNotFound("Professor not found."));
         for (CourseRegistration courseRegistration : profesorCourse) {
             courseRegistration.setProfesor(profesor);
         }
         courseRegistrationRepository.saveAll(profesorCourse);
 
-        assert profesor != null;
+
         eventPublisher.publishEvent(new ProfessorRegistrationEvent(profesor.getName()));
     }
 

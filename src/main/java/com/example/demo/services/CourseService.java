@@ -4,18 +4,24 @@ import com.example.demo.controllers.CourseController;
 import com.example.demo.entities.courses.Course;
 import com.example.demo.entities.student.CourseRegistration;
 import com.example.demo.entities.student.Student;
+import com.example.demo.event.StudentRegistrationEvent;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFound;
 import com.example.demo.model.*;
 import com.example.demo.repositories.CourseRegistrationRepository;
 import com.example.demo.repositories.CourseRepository;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class CourseService {
 
@@ -24,14 +30,16 @@ public class CourseService {
     private final StudentService studentService;
     private final CourseMapper courseMapper;
     private final StudentMapper studentMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Autowired
-    public CourseService(CourseRepository courseRepository, CourseRegistrationRepository courseRegistrationRepository, StudentService studentService, CourseMapper courseMapper, StudentMapper studentMapper) {
+    public CourseService(CourseRepository courseRepository, CourseRegistrationRepository courseRegistrationRepository, StudentService studentService, CourseMapper courseMapper, StudentMapper studentMapper, ApplicationEventPublisher eventPublisher) {
         this.courseRepository = courseRepository;
         this.courseRegistrationRepository = courseRegistrationRepository;
         this.studentService = studentService;
         this.courseMapper = courseMapper;
         this.studentMapper = studentMapper;
+        this.eventPublisher = eventPublisher;
     }
 
     private CourseDto mapToCourseDto(Course course) {
@@ -39,17 +47,23 @@ public class CourseService {
     }
 
     public Course updateCourseEntity(Course course, CourseDto courseDto) {
-        course.setName(courseDto.getName());
+        try {
+            course.setName(courseDto.getName());
+        } catch (BadRequestException e) {
+            log.error(e.getMessage());
+        }
         return course;
     }
 
     public void updateCourse(Long courseId, CourseDto courseDto) {
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFound("Course not found"));
-        if (courseDto.getName().isEmpty()) {
-            throw new BadRequestException("Course name cannot be empty");
+        try {
+            Course course = courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFound("Course not found"));
+            Course updatedCourse = updateCourseEntity(course, courseDto);
+            courseRepository.save(updatedCourse);
+        } catch (ResourceNotFound e) {
+            log.error(e.getMessage());
         }
-        Course updatedCourse = updateCourseEntity(course, courseDto);
-        courseRepository.save(updatedCourse);
+
     }
 
 
@@ -58,25 +72,44 @@ public class CourseService {
     }
 
     public CourseDto addNewSubject(CourseDto courseDto) {
-        System.out.println(courseDto.getName());
+
         if (courseDto.getName() == null || courseDto.getName().isEmpty()) {
             throw new BadRequestException("Course name is required");
         } else if (!courseDto.getName().matches("^[A-Za-z0-9 ]+$")) {
             throw new BadRequestException("Course name contains invalid characters");
         }
         Course course = mapToCourseEntity(courseDto);
-        courseRepository.save(course);
+        try {
+
+            courseRepository.save(course);
+
+
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+
         return mapToCourseDto(course);
-
-
     }
 
+    @EventListener
+    public void sendMessageAfterRegistration(StudentRegistrationEvent event) {
+        System.out.println("Student: " + event.studentName() + " is registered" + " to the course " + event.CourseName());
+    }
+
+    @Transactional
     public void assignStudentToCourse(Student student, Course course) {
         CourseRegistration courseRegistration = new CourseRegistration();
+        try {
+            courseRegistration.setCourse(course);
+            courseRegistration.setStudent(student);
 
-        courseRegistration.setCourse(course);
-        courseRegistration.setStudent(student);
-        courseRegistrationRepository.save(courseRegistration);
+            courseRegistrationRepository.save(courseRegistration);
+            eventPublisher.publishEvent(new StudentRegistrationEvent(student.getName(), course.getName()));
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+
+
     }
 
     public Course findById(Long courseId) {
@@ -106,7 +139,12 @@ public class CourseService {
 
 
     public GradeDto calculateAverageStudenGrade(Long studentId) {
-        Student student = studentService.findById(studentId);
+        Student student = new Student();
+        try {
+            student = studentService.findById(studentId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
         return calculateAverageStudenGrade(student);
     }
 
